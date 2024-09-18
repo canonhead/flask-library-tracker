@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 from werkzeug.exceptions import abort
-from flaskr.auth import login_required
-from flaskr.db import get_db
+from libtrack.auth import login_required
+from libtrack.db import get_db
 import requests
 
 bp = Blueprint("books", __name__)
@@ -10,11 +10,7 @@ bp = Blueprint("books", __name__)
 @bp.route("/")
 def index():
     db = get_db()
-    books = db.execute(
-        "SELECT id, title, author, publisher, publish_year, book_loc, page_count, isbn"
-        " FROM book b"
-        " ORDER BY title ASC"
-    ).fetchall()
+    books = db.execute("SELECT *" " FROM book b" " ORDER BY created DESC").fetchall()
     return render_template("books/index.html", books=books)
 
 

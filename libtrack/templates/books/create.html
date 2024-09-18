@@ -9,9 +9,9 @@
         <label for="isbn">ISBN</label>
         <input name="isbn" id="isbn" type="number" value="{{ request.form['isbn'] }}" required>
         <label for="purchase_loc">Purchase Location</label>
-        <input name="purchase_loc" id="purchase_loc" value="{{ request.form['purchase_loc'] or 'N/A' }}">
+        <input name="purchase_loc" id="purchase_loc" value="{{ request.form['purchase_loc'] or None }}">
         <label for="purchase_date">Purchase Date</label>
-        <input name="purchase_date" id="purchase_date" type="date" value="{{ request.form['purchase_date'] or 'N/A' }}">
+        <input name="purchase_date" id="purchase_date" type="date" value="{{ request.form['purchase_date'] or None }}">
         <label for="book_loc">Book Location</label>
         <input name="book_loc" id="book_loc" value="{{ request.form['book_loc'] }}" required>
         <input type="submit" value="Save">
