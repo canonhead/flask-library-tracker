@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Edit "{{ book['title'] }}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    
+    <form method="post" style="background-color: #F8CAF9; font-size: 120%">
+        <label for="isbn">ISBN</label>
+        <p>{{book['isbn']}}</p>
+        <label for="title">Title</label>
+        <p>{{book['title']}}</p>
+        <label for="author">Author</label>
+        <p>{{book['author']}}</p>
+        <label for="publisher">Publisher</label>
+        <p>{{book['publisher']}}</p>
+        <label for="publish_year">Year Published</label>
+        <p>{{book['publish_year']}}</p>
+        <label for="book_lang">Language</label>
+        <p>{{book['book_lang']}}</p>
+        <label for="purchase_loc">Purchase Location</label>
+        <p>{{book['purchase_loc']}}</p>
+        <label for="purchase_date">Purchase Date</label>
+        <p>{{book['purchase_date']}}</p>
+        <label for="book_loc">Book Location</label>
+        <p>{{book['book_loc']}}</p>
+        <label for="page_count">Page Count</label>
+        <p>{{book['page_count']}}</p>
+        <label for="owner_id">Owner ID</label>
+        <p>{{book['owner_id']}}</p>
+        <label></label>
+        <a href="{{ url_for('books.update', id=book['id']) }}" class="in-form">Edit</a>
+    </form>
+    <hr>
+{% endblock %}

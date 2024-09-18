@@ -7,37 +7,48 @@ from csv import DictReader
 
 bp = Blueprint("books", __name__)
 
-languages_dict = {}
-with open("libtrack/data/iso-639-3_Name_Index.tab", encoding="utf-8") as f:
-    reader = DictReader(f, delimiter="\t", fieldnames=["id", "name", "junk"])
-    for line in reader:
-        languages_dict[line["id"]] = line["name"]
-
 
 @bp.route("/")
 def index():
     db = get_db()
-    books = db.execute("SELECT *" " FROM book b" " ORDER BY created DESC").fetchall()
+    books = db.execute(
+        "SELECT id, title, author, book_loc" " FROM book b" " ORDER BY title DESC"
+    ).fetchall()
     return render_template("books/index.html", books=books)
 
 
 def get_book_data(isbn):
     book_url = f"https://openlibrary.org/isbn/{isbn}.json"
     api_data = requests.get(book_url).json()
-    author_key = api_data["authors"][0]["key"]
-    author_url = f"https://openlibrary.org/{author_key}.json"
-    author_data = requests.get(author_url).json()
+    if "authors" in api_data:
+        author_key = api_data["authors"][0]["key"]
+        author_url = f"https://openlibrary.org/{author_key}.json"
+        author_data = requests.get(author_url).json()
+    else:
+        author_data = {}
 
-    book_data = {}
+    book_data = {
+        "isbn": None,
+        "title": None,
+        "publisher": None,
+        "publish_year": None,
+        "book_lang": None,
+        "page_count": None,
+        "author": None,
+    }
     book_data["isbn"] = isbn
-    book_data["title"] = api_data["title"]
-    book_data["publisher"] = api_data["publishers"][0]
-    book_data["publish_year"] = api_data["publish_date"]
-    book_data["book_lang"] = languages_dict[
-        api_data["languages"][0]["key"].split("/")[-1]
-    ]
-    book_data["page_count"] = api_data["pagination"]
-    book_data["author"] = author_data["name"]
+    if "title" in api_data:
+        book_data["title"] = api_data["title"]
+    if "publishers" in api_data:
+        book_data["publisher"] = api_data["publishers"][0]
+    if "publish_date" in api_data:
+        book_data["publish_year"] = api_data["publish_date"]
+    if "languages" in api_data:
+        book_data["book_lang"] = api_data["languages"][0]["key"].split("/")[-1]
+    if "pagination" in api_data:
+        book_data["page_count"] = api_data["pagination"]
+    if "name" in author_data:
+        book_data["author"] = author_data["name"]
 
     return book_data
 
@@ -63,9 +74,9 @@ def create():
         if not isbn:
             error = "ISBN is required."
         if not author:
-            error = "API ERROR"
+            error = "API ERROR: CHECK ISBN"
         if not title:
-            error = "API ERROR"
+            error = "API ERROR: CHECK ISBN"
         if not book_loc:
             error = "Book location is required."
 
@@ -114,11 +125,18 @@ def get_book(id):
     return book
 
 
+@bp.route("/<int:id>/details", methods=("GET", "POST"))
+@login_required
+def details(id):
+    book = get_book(id)
+    return render_template("books/details.html", book=book)
+
+
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
 @login_required
 def update(id):
     book = get_book(id)
-
+    print(request.form)
     if request.method == "POST":
         isbn = request.form["isbn"]
         title = request.form["title"]
@@ -136,9 +154,9 @@ def update(id):
         if not isbn:
             error = "ISBN is required."
         if not author:
-            error = "API ERROR"
+            error = "API ERROR: CHECK ISBN"
         if not title:
-            error = "API ERROR"
+            error = "API ERROR: CHECK ISBN"
         if not book_loc:
             error = "Book location is required."
 
