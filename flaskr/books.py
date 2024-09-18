@@ -12,7 +12,7 @@ def index():
     db = get_db()
     books = db.execute(
         "SELECT title, author, publisher, publish_year, book_loc, page_count, isbn"
-        " ORDER BY title ASC"
+        # " ORDER BY title ASC"
     ).fetchall()
     return render_template("books/index.html", books=books)
 
