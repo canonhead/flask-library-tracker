@@ -3,8 +3,15 @@ from werkzeug.exceptions import abort
 from libtrack.auth import login_required
 from libtrack.db import get_db
 import requests
+from csv import DictReader
 
 bp = Blueprint("books", __name__)
+
+languages_dict = {}
+with open("libtrack/data/iso-639-3_Name_Index.tab", encoding="utf-8") as f:
+    reader = DictReader(f, delimiter="\t", fieldnames=["id", "name", "junk"])
+    for line in reader:
+        languages_dict[line["id"]] = line["name"]
 
 
 @bp.route("/")
@@ -26,7 +33,9 @@ def get_book_data(isbn):
     book_data["title"] = api_data["title"]
     book_data["publisher"] = api_data["publishers"][0]
     book_data["publish_year"] = api_data["publish_date"]
-    book_data["book_lang"] = api_data["languages"][0]["key"].split("/")[-1]
+    book_data["book_lang"] = languages_dict[
+        api_data["languages"][0]["key"].split("/")[-1]
+    ]
     book_data["page_count"] = api_data["pagination"]
     book_data["author"] = author_data["name"]
 
