@@ -16,11 +16,11 @@ CREATE TABLE book(
     author TEXT NOT NULL,
     publisher TEXT,
     publish_year NUMBER,
-    book_format TEXT,
     book_lang TEXT,
     purchase_loc TEXT,
     purchase_date TEXT,
     book_loc TEXT NOT NULL,
+    page_count INTEGER,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     owner_id INTEGER NOT NULL,
     FOREIGN KEY (owner_id) REFERENCES user (id)
