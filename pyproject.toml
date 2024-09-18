@@ -4,7 +4,8 @@ version = "1.0.0"
 description = "Library tracking software built using Flask."
 dependencies = [
     "flask",
-    "requests"    
+    "requests",
+    "waitress"
 ]
 
 [build-system]
