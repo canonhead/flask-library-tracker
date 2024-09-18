@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}New Book Entry{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        <label for="isbn">ISBN</label>
+        <input name="isbn" id="isbn" type="number" value="{{ request.form['isbn'] }}" required>
+        <label for="purchase-location">Purchase Location</label>
+        <input name="purchase-location" id="purchase-location" value="{{ request.form['purchase-location'] }}" required>
+        <label for="purchase-date">Purchase Date</label>
+        <input name="purchase-date" id="purchase-date" type="date" value="{{ request.form['purchase-date'] }}" required>
+        <label for="book-location">Book Location</label>
+        <input name="book-location" id="book-location" value="{{ request.form['book-location'] }}" required>
+        <input type="submit" value="Save">
+    </form>
+{% endblock %}
