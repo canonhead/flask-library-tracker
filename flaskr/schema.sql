@@ -1,3 +1,5 @@
+-- TODO: Adapt to current project
+
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS post;
 
@@ -7,11 +9,19 @@ CREATE TABLE user(
     password TEXT NOT NULL
 );
 
-CREATE TABLE post(
+CREATE TABLE book(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    author_id INTEGER NOT NULL,
-    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    isbn INTEGER NOT NULL,
     title TEXT NOT NULL,
-    body TEXT NOT NULL,
-    FOREIGN KEY (author_id) REFERENCES user (id)
+    author TEXT NOT NULL,
+    publisher TEXT,
+    publish_year NUMBER,
+    book_lang TEXT,
+    purchase_loc TEXT,
+    purchase_date TEXT,
+    book_loc TEXT NOT NULL,
+    page_count INTEGER,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    owner_id INTEGER NOT NULL,
+    FOREIGN KEY (owner_id) REFERENCES user (id)
 );

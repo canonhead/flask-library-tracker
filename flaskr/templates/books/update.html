@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Edit "{{ book['title'] }}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        <label for="isbn">ISBN</label>
+        <input name="isbn" id="isbn" type="number" value="{{ request.form['isbn'] or book['isbn'] }}" required>
+        <label for="title">Title</label>
+        <input name="title" id="title" value="{{ request.form['title'] or book['title'] }}" required>
+        <label for="author">Author</label>
+        <input name="author" id="author" value="{{ request.form['author'] or book['author'] }}" required>
+        <label for="publisher">Publisher</label>
+        <input name="publisher" id="publisher" value="{{ request.form['publisher'] or book['publisher'] }}">
+        <label for="publish_year">Year Published</label>
+        <input name="publish_year" id="publish_year" type="number" value="{{ request.form['publish_year'] or book['publish_year'] }}">
+        <label for="book_lang">Language</label>
+        <input name="book_lang" id="book_lang" value="{{ request.form['book_lang'] or book['book_lang'] }}">
+        <label for="purchase_loc">Purchase Location</label>
+        <input name="purchase_loc" id="purchase_loc" value="{{ request.form['purchase_loc'] or book['purchase_loc'] }}">
+        <label for="purchase_date">Purchase Date</label>
+        <input name="purchase_date" id="purchase_date" type="date" value="{{ request.form['purchase_date'] or book['purchase_date'] }}">
+        <label for="book_loc">Book Location</label>
+        <input name="book_loc" id="book_loc" value="{{ request.form['book_loc'] or book['book_loc'] }}" required>
+        <label for="page_count">Page Count</label>
+        <input name="page_count" id="page_count" type="number" value="{{ request.form['page_count'] or book['page_count'] }}">
+        <label for="owner_id">Owner ID</label>
+        <input name="owner_id" id="owner_id" type="number" value="{{ request.form['owner_id'] or book['owner_id'] }}" required>
+        <input type="submit" value="Save">
+    </form>
+    <hr>
+    <form action="{{ url_for('books.delete', id=book['id']) }}" method="post">
+        <input class="danger" type="submit" value="Delete" onclick="return confirm ('Are you sure?');">
+    </form>
+{% endblock %}
