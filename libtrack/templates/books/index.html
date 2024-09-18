@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Books{% endblock %}</h1>
+    {% if g.user %}
+        <a class="action" href="{{ url_for('books.create') }}">Add New Book</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+  <table width="100%" id="data" class="table-responsive">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Book Location</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for book in books %}
+        <tr>
+          <td>{{ book['title'] }}</td>
+          <td>{{ book['author'] }}</td>
+          <td>{{ book['book_loc'] }}</td>
+          <td><a class="action" href="{{ url_for('books.details', id=book['id']) }}">Details</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
