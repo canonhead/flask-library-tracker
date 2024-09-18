@@ -11,8 +11,9 @@ bp = Blueprint("books", __name__)
 def index():
     db = get_db()
     books = db.execute(
-        "SELECT title, author, publisher, publish_year, book_loc, page_count, isbn"
-        # " ORDER BY title ASC"
+        "SELECT id, title, author, publisher, publish_year, book_loc, page_count, isbn"
+        " FROM book b"
+        " ORDER BY title ASC"
     ).fetchall()
     return render_template("books/index.html", books=books)
 
@@ -40,10 +41,11 @@ def get_book_data(isbn):
 @login_required
 def create():
     if request.method == "POST":
+        print(request.form)
         book_data = get_book_data(request.form["isbn"])
         isbn = book_data["isbn"]
         title = book_data["title"]
-        author = book_data["isbn"]
+        author = book_data["author"]
         publisher = book_data["publisher"]
         publish_year = book_data["publish_year"]
         book_lang = book_data["book_lang"]

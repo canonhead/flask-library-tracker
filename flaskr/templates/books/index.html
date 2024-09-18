@@ -16,9 +16,8 @@
                     <h1>{{ book['title'] }}</h1>
                     <div class="about">by {{ book['author'] }}. Location: {{ book['book_loc'] }}</div>
                 </div>
-                <a class="action" href="{{ url_for('books.update', id=post['id']) }}">Edit</a>
+                <a class="action" href="{{ url_for('books.update', id=book['id']) }}">Edit</a>
             </header>
-            <p class="body">{{ post['body'] }}</p>
         </article>
         {% if not loop.last %}
             <hr>

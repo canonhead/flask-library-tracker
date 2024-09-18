@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Edit "{{ post['title'] }}"{% endblock %}</h1>
+    <h1>{% block title %}Edit "{{ book['title'] }}"{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
@@ -26,7 +26,6 @@
         <input name="book_loc" id="book_loc" value="{{ request.form['book_loc'] or book['book_loc'] }}" required>
         <label for="page_count">Page Count</label>
         <input name="page_count" id="page_count" type="number" value="{{ request.form['page_count'] or book['page_count'] }}">
-        owner_id = request.form["owner_id"]
         <label for="owner_id">Owner ID</label>
         <input name="owner_id" id="owner_id" type="number" value="{{ request.form['owner_id'] or book['owner_id'] }}" required>
         <input type="submit" value="Save">
