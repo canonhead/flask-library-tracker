@@ -1,20 +1,19 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Books{% endblock %}</h1>
+    <h1>{% block title %}Recently Added Books{% endblock %}</h1>
     {% if g.user %}
         <a class="action" href="{{ url_for('books.create') }}">New</a>
     {% endif %}
 {% endblock %}
 
-<!-- TODO: Adapt to current project -->
 {% block content %}
     {% for book in books %}
-        <article class="post">
+        <article class="book">
             <header>
                 <div>
                     <h1>{{ book['title'] }}</h1>
-                    <div class="about">by {{ book['author'] }}. Location: {{ book['book_loc'] }}</div>
+                    <div class="about">by {{ book['author'] }}. Location: {{ book['book_loc'] }}. ISBN: {{ book['isbn'] }}.</div>
                 </div>
                 <a class="action" href="{{ url_for('books.update', id=book['id']) }}">Edit</a>
             </header>

@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, url_for
 from werkzeug.exceptions import abort
-from flaskr.auth import login_required
-from flaskr.db import get_db
+from libtrack.auth import login_required
+from libtrack.db import get_db
 import requests
 
 bp = Blueprint("books", __name__)
@@ -11,29 +11,48 @@ bp = Blueprint("books", __name__)
 def index():
     db = get_db()
     books = db.execute(
-        "SELECT id, title, author, publisher, publish_year, book_loc, page_count, isbn"
+        "SELECT id, title, author, publisher, publish_year, book_loc, page_count, isbn, created"
         " FROM book b"
-        " ORDER BY title ASC"
+        " ORDER BY created DESC"
     ).fetchall()
     return render_template("books/index.html", books=books)
 
 
 def get_book_data(isbn):
     book_url = f"https://openlibrary.org/isbn/{isbn}.json"
-    api_data = requests.get(book_url).json()
+    try:
+        api_data = requests.get(book_url).json()
+    except:
+        return None
     author_key = api_data["authors"][0]["key"]
     author_url = f"https://openlibrary.org/{author_key}.json"
     author_data = requests.get(author_url).json()
 
-    book_data = {}
+    book_data = {
+        "isbn": None,
+        "title": None,
+        "publisher": None,
+        "publish_year": None,
+        "book_lang": None,
+        "page_count": None,
+        "author": None,
+    }
     book_data["isbn"] = isbn
-    book_data["title"] = api_data["title"]
-    book_data["publisher"] = api_data["publishers"][0]
-    book_data["publish_year"] = api_data["publish_date"]
-    book_data["book_lang"] = api_data["languages"][0]["key"].split("/")[-1]
-    book_data["page_count"] = api_data["pagination"]
-    book_data["author"] = author_data["name"]
+    if "title" in api_data:
+        book_data["title"] = api_data["title"]
+    if "publishers" in api_data:
+        book_data["publisher"] = api_data["publishers"][0]
+    if "publish_date" in api_data:
+        book_data["publish_year"] = api_data["publish_date"]
+    if "languages" in api_data:
+        book_data["book_lang"] = api_data["languages"][0]["key"].split("/")[-1]
+    if "pagination" in api_data:
+        book_data["page_count"] = api_data["pagination"]
+    if "name" in author_data:
+        book_data["author"] = author_data["name"]
 
+    print("BOOK DATA:")
+    print(book_data)
     return book_data
 
 
@@ -41,52 +60,55 @@ def get_book_data(isbn):
 @login_required
 def create():
     if request.method == "POST":
-        print(request.form)
-        book_data = get_book_data(request.form["isbn"])
-        isbn = book_data["isbn"]
-        title = book_data["title"]
-        author = book_data["author"]
-        publisher = book_data["publisher"]
-        publish_year = book_data["publish_year"]
-        book_lang = book_data["book_lang"]
-        purchase_loc = request.form["purchase_loc"]
-        purchase_date = request.form["purchase_date"]
-        book_loc = request.form["book_loc"]
-        page_count = book_data["page_count"]
         error = None
-
-        if not isbn:
-            error = "ISBN is required."
-        if not author:
-            error = "API ERROR"
-        if not title:
-            error = "API ERROR"
-        if not book_loc:
-            error = "Book location is required."
-
-        if error is not None:
+        book_data = get_book_data(request.form["isbn"])
+        if book_data == None:
+            error = "INCORRECT API"
             flash(error)
         else:
-            db = get_db()
-            db.execute(
-                "INSERT INTO book (isbn, title, author, publisher, publish_year, book_lang, purchase_loc, purchase_date, book_loc, page_count, owner_id)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (
-                    isbn,
-                    title,
-                    author,
-                    publisher,
-                    publish_year,
-                    book_lang,
-                    purchase_loc,
-                    purchase_date,
-                    book_loc,
-                    page_count,
-                    g.user["id"],
-                ),
-            )
-            db.commit()
-            return redirect(url_for("books.index"))
+            isbn = book_data["isbn"]
+            title = book_data["title"]
+            author = book_data["author"]
+            publisher = book_data["publisher"]
+            publish_year = book_data["publish_year"]
+            book_lang = book_data["book_lang"]
+            purchase_loc = request.form["purchase_loc"]
+            purchase_date = request.form["purchase_date"]
+            book_loc = request.form["book_loc"]
+            page_count = book_data["page_count"]
+
+            if not isbn:
+                error = "ISBN is required."
+            if not author:
+                error = "API ERROR"
+            if not title:
+                error = "API ERROR"
+            if not book_loc:
+                error = "Book location is required."
+
+            if error is not None:
+                flash(error)
+            else:
+                db = get_db()
+                db.execute(
+                    "INSERT INTO book (isbn, title, author, publisher, publish_year, book_lang, purchase_loc, purchase_date, book_loc, page_count, owner_id)"
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        isbn,
+                        title,
+                        author,
+                        publisher,
+                        publish_year,
+                        book_lang,
+                        purchase_loc,
+                        purchase_date,
+                        book_loc,
+                        page_count,
+                        g.user["id"],
+                    ),
+                )
+                db.commit()
+                return redirect(url_for("books.index"))
 
     return render_template("books/create.html")
 
@@ -173,3 +195,10 @@ def delete(id):
     db.execute("DELETE FROM book WHERE id = ?", (id,))
     db.commit()
     return redirect(url_for("books.index"))
+
+
+@bp.route("/table")
+def table():
+    db = get_db()
+    books = db.execute("SELECT *" " FROM book b" " ORDER BY title DESC").fetchall()
+    return render_template("books/table.html", books=books)

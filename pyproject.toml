@@ -1,9 +1,10 @@
 [project]
-name = "flaskr"
+name = "libtrack"
 version = "1.0.0"
-description = "The basic blog app built in the Flask tutorial."
+description = "Online library tracking software developed using Flask."
 dependencies = [
     "flask",
+    "requests"
 ]
 
 [build-system]
