@@ -21,6 +21,7 @@ CREATE TABLE book(
     purchase_date TEXT,
     book_loc TEXT NOT NULL,
     page_count INTEGER,
+    category TEXT NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     owner_id INTEGER NOT NULL,
     FOREIGN KEY (owner_id) REFERENCES user (id)

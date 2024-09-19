@@ -12,14 +12,19 @@ bp = Blueprint("books", __name__)
 def index():
     db = get_db()
     books = db.execute(
-        "SELECT id, title, author, book_loc" " FROM book b" " ORDER BY title DESC"
+        "SELECT id, title, author, book_loc, category"
+        " FROM book b"
+        " ORDER BY title ASC"
     ).fetchall()
     return render_template("books/index.html", books=books)
 
 
 def get_book_data(isbn):
     book_url = f"https://openlibrary.org/isbn/{isbn}.json"
-    api_data = requests.get(book_url).json()
+    try:
+        api_data = requests.get(book_url).json()
+    except:
+        return None
     if "authors" in api_data:
         author_key = api_data["authors"][0]["key"]
         author_url = f"https://openlibrary.org/{author_key}.json"
@@ -57,40 +62,44 @@ def get_book_data(isbn):
 @login_required
 def create():
     if request.method == "POST":
-        print(request.form)
         book_data = get_book_data(request.form["isbn"])
-        isbn = book_data["isbn"]
-        title = book_data["title"]
-        author = book_data["author"]
-        publisher = book_data["publisher"]
-        publish_year = book_data["publish_year"]
-        book_lang = book_data["book_lang"]
-        purchase_loc = request.form["purchase_loc"]
-        purchase_date = request.form["purchase_date"]
-        book_loc = request.form["book_loc"]
-        page_count = book_data["page_count"]
-        error = None
+        if book_data == None:
+            error = "API ERROR: CHECK ISBN"
+        else:
+            isbn = book_data["isbn"]
+            title = book_data["title"]
+            author = book_data["author"]
+            publisher = book_data["publisher"]
+            publish_year = book_data["publish_year"]
+            book_lang = book_data["book_lang"]
+            purchase_loc = request.form["purchase_loc"]
+            purchase_date = request.form["purchase_date"]
+            book_loc = request.form["book_loc"]
+            page_count = book_data["page_count"]
+            category = request.form["category"]
+            error = None
 
-        if not isbn:
-            error = "ISBN is required."
-        if not author:
-            error = "API ERROR: CHECK ISBN"
-        if not title:
-            error = "API ERROR: CHECK ISBN"
-        if not book_loc:
-            error = "Book location is required."
+            if not isbn:
+                error = "ISBN is required."
+            if not author:
+                error = "API ERROR: CHECK ISBN"
+            if not title:
+                error = "API ERROR: CHECK ISBN"
+            if not book_loc:
+                error = "Book location is required."
 
         if error is not None:
             flash(error)
         else:
             db = get_db()
             db.execute(
-                "INSERT INTO book (isbn, title, author, publisher, publish_year, book_lang, purchase_loc, purchase_date, book_loc, page_count, owner_id)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO book (isbn, title, author, category, publisher, publish_year, book_lang, purchase_loc, purchase_date, book_loc, page_count, owner_id)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     isbn,
                     title,
                     author,
+                    category,
                     publisher,
                     publish_year,
                     book_lang,
@@ -111,7 +120,7 @@ def get_book(id):
     book = (
         get_db()
         .execute(
-            "SELECT b.id, isbn, title, author, publisher, publish_year, book_lang, purchase_loc, purchase_date, book_loc, page_count, owner_id"
+            "SELECT b.id, isbn, title, author, category, publisher, publish_year, book_lang, purchase_loc, purchase_date, book_loc, page_count, owner_id"
             " FROM book b"
             " WHERE b.id = ?",
             (id,),
@@ -126,7 +135,6 @@ def get_book(id):
 
 
 @bp.route("/<int:id>/details", methods=("GET", "POST"))
-@login_required
 def details(id):
     book = get_book(id)
     return render_template("books/details.html", book=book)
@@ -149,6 +157,7 @@ def update(id):
         book_loc = request.form["book_loc"]
         page_count = request.form["page_count"]
         owner_id = request.form["owner_id"]
+        category = request.form["category"]
 
         error = None
         if not isbn:
@@ -165,12 +174,13 @@ def update(id):
         else:
             db = get_db()
             db.execute(
-                "UPDATE book SET isbn = ?, title = ?, author = ?, publisher = ?, publish_year = ?, book_lang = ?, purchase_loc = ?, purchase_date = ?, book_loc = ?, page_count = ?, owner_id = ?"
+                "UPDATE book SET isbn = ?, title = ?, author = ?, category = ?, publisher = ?, publish_year = ?, book_lang = ?, purchase_loc = ?, purchase_date = ?, book_loc = ?, page_count = ?, owner_id = ?"
                 " WHERE id = ?",
                 (
                     isbn,
                     title,
                     author,
+                    category,
                     publisher,
                     publish_year,
                     book_lang,

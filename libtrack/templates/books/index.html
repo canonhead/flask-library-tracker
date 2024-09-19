@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block header %}
     <h1>{% block title %}Books{% endblock %}</h1>
     {% if g.user %}
@@ -8,21 +7,116 @@
 {% endblock %}
 
 {% block content %}
-  <table width="100%" id="data" class="table-responsive">
+  <script>
+    function myFunction0() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput0");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("data");
+      tr = table.getElementsByTagName("tr");
+    
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 2; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    function myFunction1() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput1");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("data");
+      tr = table.getElementsByTagName("tr");
+    
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 2; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    function myFunction2() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput2");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("data");
+      tr = table.getElementsByTagName("tr");
+    
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 2; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[2];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    function myFunction3() {
+      // Declare variables
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("myInput3");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("data");
+      tr = table.getElementsByTagName("tr");
+    
+      // Loop through all table rows, and hide those who don't match the search query
+      for (i = 2; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[3];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>    
+  <table id="data" class="table-responsive" >
     <thead>
       <tr>
         <th>Title</th>
         <th>Author</th>
         <th>Book Location</th>
+        <th>Category</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <th><input type="text" id="myInput0" onkeyup="myFunction0()" placeholder="Search..." size="5"></th>
+        <th><input type="text" id="myInput1" onkeyup="myFunction1()" placeholder="Search..." size="5"></th>
+        <th><input type="text" id="myInput2" onkeyup="myFunction2()" placeholder="Search..." size="5"></th>
+        <th><input type="text" id="myInput3" onkeyup="myFunction3()" placeholder="Search..." size="5"></th>
+        <th></th>
+      </tr>
       {% for book in books %}
         <tr>
           <td>{{ book['title'] }}</td>
           <td>{{ book['author'] }}</td>
           <td>{{ book['book_loc'] }}</td>
+          <td>{{ book['category'] }}</td>
           <td><a class="action" href="{{ url_for('books.details', id=book['id']) }}">Details</a></td>
         </tr>
       {% endfor %}

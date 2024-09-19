@@ -14,6 +14,8 @@
         <input name="purchase_date" id="purchase_date" type="date" value="{{ request.form['purchase_date'] or None }}">
         <label for="book_loc">Book Location</label>
         <input name="book_loc" id="book_loc" value="{{ request.form['book_loc'] }}" required>
+        <label for="category">Category</label>
+        <input name="category" id="category" value="{{ request.form['category'] }}" required>
         <input type="submit" value="Save">
     </form>
 {% endblock %}
